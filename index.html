@@ -40,7 +40,7 @@
         .btn:hover {
             background-color: #45a049;
         }
-        #restaurantList, #addItemForm {
+        #restaurantList, #addItemForm, #itemList {
             display: none;
             margin-top: 20px;
         }
@@ -55,7 +55,18 @@
         }
         #itemList {
             text-align: left;
-            margin-top: 20px;
+        }
+        .item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .reserve-btn {
+            background-color: #008CBA;
+        }
+        .reserve-btn:hover {
+            background-color: #007B9A;
         }
     </style>
 </head>
@@ -85,6 +96,18 @@
     <script>
         let restaurants = {};
 
+        // Load data from localStorage on page load
+        window.onload = function() {
+            const storedData = localStorage.getItem('foodSavingAppData');
+            if (storedData) {
+                restaurants = JSON.parse(storedData);
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('foodSavingAppData', JSON.stringify(restaurants));
+        }
+
         function showRestaurantList() {
             document.getElementById('mainMenu').style.display = 'none';
             document.getElementById('restaurantList').style.display = 'block';
@@ -102,7 +125,7 @@
             document.getElementById('mainMenu').style.display = 'block';
             document.getElementById('restaurantList').style.display = 'none';
             document.getElementById('addItemForm').style.display = 'none';
-            document.getElementById('itemList').innerHTML = '';
+            document.getElementById('itemList').style.display = 'none';
             document.getElementById('backBtn').style.display = 'none';
         }
 
@@ -115,7 +138,8 @@
                 if (!restaurants[restaurant]) {
                     restaurants[restaurant] = [];
                 }
-                restaurants[restaurant].push({ name: itemName, quantity: parseInt(quantity) });
+                restaurants[restaurant].push({ name: itemName, quantity: parseInt(quantity), reserved: 0 });
+                saveData();
                 updateRestaurantList();
                 alert('Item added successfully!');
                 document.getElementById('itemName').value = '';
@@ -129,16 +153,36 @@
             const list = document.getElementById('restaurantList');
             list.innerHTML = '<h2>Available Restaurants</h2>';
             for (const [restaurant, items] of Object.entries(restaurants)) {
-                const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-                list.innerHTML += `<p><strong>${restaurant}</strong>: ${totalItems} item(s) available</p>`;
+                const availableItems = items.reduce((sum, item) => sum + (item.quantity - item.reserved), 0);
+                list.innerHTML += `<p><strong>${restaurant}</strong>: ${availableItems} item(s) available 
+                                   <a href="#" class="btn" onclick="showItemList('${restaurant}')">View Items</a></p>`;
             }
         }
 
         function showItemList(restaurant) {
             const itemList = document.getElementById('itemList');
+            itemList.style.display = 'block';
             itemList.innerHTML = `<h2>${restaurant} Items</h2>`;
-            for (const item of restaurants[restaurant]) {
-                itemList.innerHTML += `<p>${item.name}: ${item.quantity}</p>`;
+            for (let i = 0; i < restaurants[restaurant].length; i++) {
+                const item = restaurants[restaurant][i];
+                const availableQuantity = item.quantity - item.reserved;
+                itemList.innerHTML += `
+                    <div class="item">
+                        <p>${item.name}: ${availableQuantity} available</p>
+                        <a href="#" class="btn reserve-btn" onclick="reserveItem('${restaurant}', ${i})">Reserve</a>
+                    </div>`;
+            }
+        }
+
+        function reserveItem(restaurant, itemIndex) {
+            const item = restaurants[restaurant][itemIndex];
+            if (item.quantity > item.reserved) {
+                item.reserved++;
+                saveData();
+                showItemList(restaurant);
+                alert(`You have reserved 1 ${item.name} from ${restaurant}`);
+            } else {
+                alert('Sorry, this item is no longer available.');
             }
         }
     </script>
