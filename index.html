@@ -3,45 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Savor</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Food Saving App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 90%;
+            width: 400px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        #restaurantList, #addItemForm {
+            display: none;
+            margin-top: 20px;
+        }
+        input, select {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        #itemList {
+            text-align: left;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Savor</h1>
-    </header>
-    
-    <main>
-        <section id="restaurant-list">
-            <h2>Available Surplus Food</h2>
-            <div class="restaurant" id="restaurant1">
-                <h3>Restaurant 1</h3>
-                <p>Available Items: 3</p>
-                <button onclick="reserveItem('Restaurant 1')">Reserve Now</button>
-            </div>
-            <div class="restaurant" id="restaurant2">
-                <h3>Restaurant 2</h3>
-                <p>Available Items: 5</p>
-                <button onclick="reserveItem('Restaurant 2')">Reserve Now</button>
-            </div>
-            <div class="restaurant" id="restaurant3">
-                <h3>Restaurant 3</h3>
-                <p>Available Items: 2</p>
-                <button onclick="reserveItem('Restaurant 3')">Reserve Now</button>
-            </div>
-        </section>
-        
-        <section id="confirmation" style="display:none;">
-            <h2>Reservation Confirmation</h2>
-            <p id="confirmation-message"></p>
-            <button onclick="goBack()">Go Back</button>
-        </section>
-    </main>
-    
-    <footer>
-        <p>Reduce food waste and save!</p>
-    </footer>
-    
-    <script src="script.js"></script>
+    <div class="container">
+        <h1>Food Saving App</h1>
+        <div id="mainMenu">
+            <a href="#" class="btn" onclick="showRestaurantList()">Savor Food</a>
+            <a href="#" class="btn" onclick="showAddItemForm()">Save Your Food</a>
+        </div>
+        <div id="restaurantList"></div>
+        <div id="addItemForm">
+            <select id="restaurantSelect">
+                <option value="">Select Restaurant</option>
+                <option value="Restaurant A">Restaurant A</option>
+                <option value="Restaurant B">Restaurant B</option>
+                <option value="Restaurant C">Restaurant C</option>
+            </select>
+            <input type="text" id="itemName" placeholder="Item Name">
+            <input type="number" id="itemQuantity" placeholder="Quantity">
+            <a href="#" class="btn" onclick="addItem()">Add Item</a>
+        </div>
+        <div id="itemList"></div>
+        <a href="#" class="btn" onclick="showMainMenu()" style="display: none;" id="backBtn">Back to Main Menu</a>
+    </div>
+
+    <script>
+        let restaurants = {};
+
+        function showRestaurantList() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('restaurantList').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'inline-block';
+            updateRestaurantList();
+        }
+
+        function showAddItemForm() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('addItemForm').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'inline-block';
+        }
+
+        function showMainMenu() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('restaurantList').style.display = 'none';
+            document.getElementById('addItemForm').style.display = 'none';
+            document.getElementById('itemList').innerHTML = '';
+            document.getElementById('backBtn').style.display = 'none';
+        }
+
+        function addItem() {
+            const restaurant = document.getElementById('restaurantSelect').value;
+            const itemName = document.getElementById('itemName').value;
+            const quantity = document.getElementById('itemQuantity').value;
+
+            if (restaurant && itemName && quantity) {
+                if (!restaurants[restaurant]) {
+                    restaurants[restaurant] = [];
+                }
+                restaurants[restaurant].push({ name: itemName, quantity: parseInt(quantity) });
+                updateRestaurantList();
+                alert('Item added successfully!');
+                document.getElementById('itemName').value = '';
+                document.getElementById('itemQuantity').value = '';
+            } else {
+                alert('Please fill in all fields.');
+            }
+        }
+
+        function updateRestaurantList() {
+            const list = document.getElementById('restaurantList');
+            list.innerHTML = '<h2>Available Restaurants</h2>';
+            for (const [restaurant, items] of Object.entries(restaurants)) {
+                const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+                list.innerHTML += `<p><strong>${restaurant}</strong>: ${totalItems} item(s) available</p>`;
+            }
+        }
+
+        function showItemList(restaurant) {
+            const itemList = document.getElementById('itemList');
+            itemList.innerHTML = `<h2>${restaurant} Items</h2>`;
+            for (const item of restaurants[restaurant]) {
+                itemList.innerHTML += `<p>${item.name}: ${item.quantity}</p>`;
+            }
+        }
+    </script>
 </body>
 </html>
