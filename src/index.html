@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Too Good To Go Clone</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Too Good To Go Clone</h1>
+    </header>
+    
+    <main>
+        <section id="restaurant-list">
+            <h2>Available Surplus Food</h2>
+            <div class="restaurant" id="restaurant1">
+                <h3>Restaurant 1</h3>
+                <p>Available Items: 3</p>
+                <button onclick="reserveItem('Restaurant 1')">Reserve Now</button>
+            </div>
+            <div class="restaurant" id="restaurant2">
+                <h3>Restaurant 2</h3>
+                <p>Available Items: 5</p>
+                <button onclick="reserveItem('Restaurant 2')">Reserve Now</button>
+            </div>
+            <div class="restaurant" id="restaurant3">
+                <h3>Restaurant 3</h3>
+                <p>Available Items: 2</p>
+                <button onclick="reserveItem('Restaurant 3')">Reserve Now</button>
+            </div>
+        </section>
+        
+        <section id="confirmation" style="display:none;">
+            <h2>Reservation Confirmation</h2>
+            <p id="confirmation-message"></p>
+            <button onclick="goBack()">Go Back</button>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Reduce food waste and save!</p>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>
